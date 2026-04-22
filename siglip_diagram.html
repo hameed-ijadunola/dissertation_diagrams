@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SigLIP Architecture Diagram</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 24px;
+}
+
+/* ── TITLE ─────────────────────────────────────── */
+.diagram-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  letter-spacing: -0.3px;
+}
+
+/* ── MAIN LAYOUT ────────────────────────────────── */
+.main-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 1480px;
+}
+
+/* ── SMALL ARROW ────────────────────────────────── */
+.arr {
+  font-size: 18px;
+  color: #444;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
+/* ════════════════════════════════════════════════
+   1. INPUT SECTION
+═══════════════════════════════════════════════ */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 148px;
+  flex-shrink: 0;
+}
+
+.section-header {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+.section-subheader {
+  font-size: 10px;
+  color: #555;
+  text-align: center;
+}
+
+/* Image Stack */
+.img-stack-wrap {
+  position: relative;
+  width: 110px;
+  height: 112px;
+  margin: 6px 0 4px;
+}
+.img-card {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  border: 1.5px solid #bbb;
+  border-radius: 6px;
+  background: #f8f8f8;
+  overflow: hidden;
+}
+.img-card:nth-child(3) { top: 0; left: 0; z-index: 1; background: #ececec; }
+.img-card:nth-child(2) { top: 6px; left: 6px; z-index: 2; background: #f4f4f4; }
+.img-card:nth-child(1) { top: 12px; left: 12px; z-index: 3; background: white; }
+
+.img-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+  padding: 4px;
+  height: 100%;
+  width: 100%;
+}
+.img-thumb { border-radius: 3px; font-size: 63px; display: flex; align-items: center; justify-content: center; }
+.th-dog   { background: #f5e8c8; }
+.th-car   { background: #c8ddf5; }
+.th-city  { background: #c8f5d0; }
+.th-beach { background: #f5d4c8; }
+
+/* N Matching Pairs label */
+.matching-label {
+  font-size: 11px;
+  color: #2a6e2a;
+  font-weight: 600;
+  text-align: center;
+  background: #e8f5e8;
+  border: 1px solid #7ec87e;
+  border-radius: 12px;
+  padding: 3px 10px;
+  margin: 2px 0 6px;
+}
+
+/* Text Phrase Stack */
+.text-phrase-stack { width: 130px; }
+.text-phrase {
+  background: #fdf3d5;
+  border: 1.5px solid #d4b860;
+  border-radius: 18px;
+  font-size: 10.5px;
+  padding: 4px 10px;
+  text-align: center;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+.dots-phrase {
+  text-align: center;
+  font-size: 14px;
+  color: #888;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+/* ════════════════════════════════════════════════
+   2. ENCODERS
+═══════════════════════════════════════════════ */
+.encoders-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.encoder-box {
+  width: 175px;
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 8px;
+}
+.img-enc { background: #daeeff; border-color: #6aaed4; }
+.txt-enc { background: #fff5d6; border-color: #d4a030; }
+
+.enc-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.enc-subtitle {
+  font-size: 10px;
+  text-align: center;
+  color: #444;
+  margin-top: 5px;
+}
+
+.layer-box {
+  border: 1.5px solid;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  margin: 3px 0;
+}
+.lyr-vit    { background: #78bce8; border-color: #3a9ad4; color: #fff; }
+.lyr-layer  { background: #a0cce0; border-color: #60a4c4; }
+.lyr-attn   { background: #b8d8e8; border-color: #78b0c8; }
+.lyr-trans  { background: #ffd98a; border-color: #c8a030; }
+.lyr-sattn  { background: #ffc866; border-color: #c89030; }
+
+.enc-arrows-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.enc-mini-arrow {
+  font-size: 12px;
+  color: #444;
+  line-height: 1;
+}
+
+.token-row {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.token-sq {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #888;
+  border-radius: 2px;
+  background: white;
+}
+
+/* ════════════════════════════════════════════════
+   3. PROJECTION BOXES
+═══════════════════════════════════════════════ */
+.projection-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.proj-box {
+  width: 38px;
+  height: 190px;
+  background: #e0e0e0;
+  border: 1.5px solid #999;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.proj-text {
+  font-size: 10px;
+  font-weight: 600;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  color: #333;
+  text-align: center;
+  width: 185px;
+  line-height: 1.4;
+}
+
+/* ════════════════════════════════════════════════
+   4. SHARED EMBEDDING + MATRIX (dashed container)
+═══════════════════════════════════════════════ */
+.embed-matrix-outer {
+  border: 2px dashed #888;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+.embed-matrix-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.embed-matrix-inner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* Embedding columns */
+.embed-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.embed-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.embed-sub {
+  font-size: 9.5px;
+  color: #555;
+  text-align: center;
+  font-style: italic;
+}
+.embed-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 4px 0;
+}
+.eb { width: 46px; height: 14px; border: 1px solid; }
+.eb-blue   { background: #3b8fd4; border-color: #1a6aaa; }
+.eb-orange { background: #e0903a; border-color: #b06018; }
+.eb-dots   { background: transparent; border-color: transparent; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888; }
+
+/* ────── N×N MATRIX ────── */
+.matrix-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.matrix-main-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2px;
+}
+.matrix-note {
+  font-size: 9.5px;
+  text-align: center;
+  color: #555;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+.matrix-n-label {
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.matrix-area {
+  position: relative;
+}
+
+/* Column axis label */
+.col-axis-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
+  color: #e07828;
+  margin-bottom: 3px;
+}
+
+table.sim-matrix {
+  border-collapse: collapse;
+}
+table.sim-matrix th {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 6px;
+  color: #1a60aa;
+}
+table.sim-matrix td {
+  width: 64px;
+  height: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  font-size: 9.5px;
+  vertical-align: middle;
+  padding: 1px 2px;
+  line-height: 1.3;
+}
+table.sim-matrix .rh {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  color: #1a60aa;
+  padding-right: 6px;
+  border: none;
+  background: none;
+}
+table.sim-matrix .pos { background: #a8e0a8; }
+table.sim-matrix .neg { background: #f5b4b4; }
+table.sim-matrix .dots-cell {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  color: #888;
+  letter-spacing: 2px;
+}
+
+.col-text-label {
+  font-size: 10px;
+  color: #e07828;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Temperature note */
+.tau-note {
+  font-size: 10px;
+  color: #555;
+  text-align: center;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Chunked GPU-memory callout (SigLIP paper) */
+.chunked-outer {
+  margin-top: 10px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+.chunked-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.chunked-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+.chunk-box {
+  background: #fff;
+  border: 1.5px solid #999;
+  border-radius: 8px;
+  padding: 8px 10px;
+  width: 195px;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.25;
+}
+.chunk-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  color: #555;
+  font-weight: 600;
+}
+.chunk-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #444;
+  padding: 0 2px;
+}
+.chunk-mini {
+  background: #fafafa;
+  border: 1.5px dashed #999;
+  border-radius: 10px;
+  padding: 8px 10px;
+  width: 205px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.chunk-mini-title {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-align: center;
+  color: #333;
+}
+.chunk-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 10px);
+  grid-template-rows: repeat(6, 10px);
+  gap: 2px;
+}
+.chunk-cell {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+}
+.chunk-cell.hot {
+  background: #ffd98a;
+  border-color: #c8a030;
+}
+.chunk-mini-foot {
+  font-size: 9px;
+  color: #555;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ════════════════════════════════════════════════
+   5. LOSS SECTION
+═══════════════════════════════════════════════ */
+.loss-section {
+  background: #f0f0f0;
+  border: 2px solid #999;
+  border-radius: 10px;
+  padding: 10px;
+  width: max-content;
+  flex: 0 0 auto;
+}
+.loss-main-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.loss-box {
+  background: white;
+  border: 1.5px solid #999;
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-align: center;
+  width: 160px;
+  line-height: 1.25;
+}
+
+.total-loss-box {
+  background: #d5d5d5;
+  border: 2px solid #777;
+  border-radius: 6px;
+  padding: 10px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* ── LEGEND ───────────────────────────────────── */
+.legend {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  margin-top: 18px;
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.legend-swatch {
+  width: 24px;
+  height: 16px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+.leg-pos { background: #a8e0a8; }
+.leg-neg { background: #f5b4b4; }
+</style>
+</head>
+<body>
+
+<div class="diagram-container" style="min-width:1500px;">
+
+  <h1 class="diagram-title">Architectural Diagram of SigLIP (Sigmoid Loss for Language-Image Pretraining)</h1>
+
+  <div class="main-row">
+
+    <!-- ══════════ 1. INPUTS (row-aligned to encoders) ══════════ -->
+    <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0;width:148px;">
+
+      <!-- Row 1: Image input (aligned to Image Encoder row center) -->
+      <div style="height:298px;display:flex;align-items:center;justify-content:center;">
+      <div class="input-section" style="width:148px;">
+        <div class="section-header">Input: Image Stack</div>
+        <div class="section-subheader">(Batch of <em>N</em> Images)</div>
+
+        <div class="img-stack-wrap">
+          <div class="img-card">
+            <div class="img-grid">
+              <div class="img-thumb th-dog">🐕</div>
+            </div>
+          </div>
+          <div class="img-card">
+            <div class="img-grid">
+              <div class="img-thumb th-car">🚗</div>
+            </div>
+          </div>
+          <div class="img-card">
+            <div class="img-grid">
+              <div class="img-thumb th-city">🏙️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="matching-label" style="margin-top:6px;">N Matching Pairs (<em>i</em>, <em>t</em>)</div>
+
+    <!-- Row 2: Text input (aligned to Text Encoder row center) -->
+    <div style="height:298px;display:flex;align-items:center;justify-content:center;">
+      <div class="input-section" style="width:148px;">
+        <div class="section-header">Input: Text Phrase Stack</div>
+        <div class="section-subheader" style="margin-bottom:6px;">(Batch of <em>N</em> Phrases)</div>
+
+        <div class="text-phrase-stack">
+        <div class="text-phrase">'a photo of a dog'</div>
+        <div class="text-phrase">'a black car'</div>
+        <div class="dots-phrase">…</div>
+        <div class="text-phrase">'a city skyline'</div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- arrows aligned to row centers -->
+    <div style="display:flex;flex-direction:column;gap:10px;padding:0 2px;flex-shrink:0;">
+      <div style="height:298px;display:flex;align-items:center;justify-content:center;">
+      <div class="arr">→</div>
+      </div>
+      <div style="height:298px;display:flex;align-items:center;justify-content:center;">
+      <div class="arr">→</div>
+      </div>
+    </div>
+
+    <!-- ══════════ 2 + 3. ENCODERS → PROJECTION (row-aligned) ══════════ -->
+    <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0;">
+
+      <!-- Row 1: Image path -->
+      <div style="display:flex;align-items:center;gap:4px;height:298px;padding-bottom:10px;">
+      <div class="encoder-box img-enc">
+        <div class="enc-title">Image Encoder</div>
+        <div class="enc-arrows-inner">
+        <div class="layer-box lyr-vit">ViT</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div class="layer-box lyr-layer">Layer</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div class="layer-box lyr-attn">Attention</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div class="layer-box lyr-attn">Attention</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center;padding:2px;">
+          <span style="font-size:10px;background:#eee;border:1px solid #bbb;padding:1px 3px;border-radius:2px;">🖼️</span>
+          <span style="font-size:10px;background:#eee;border:1px solid #bbb;padding:1px 3px;border-radius:2px;">🖼️</span>
+          <span style="font-size:10px;background:#eee;border:1px solid #bbb;padding:1px 3px;border-radius:2px;">🖼️</span>
+          <span style="font-size:10px;background:#eee;border:1px solid #bbb;padding:1px 3px;border-radius:2px;">🖼️</span>
+        </div>
+        </div>
+        <div class="enc-subtitle">[<strong>ViT</strong> (Vision Transformer) / ResNet]</div>
+      </div>
+
+      <div class="arr">→</div>
+
+      <div class="proj-box">
+        <div class="proj-text">Linear Projection<br>Head &amp; Normalization</div>
+      </div>
+
+      <div class="arr">→</div>
+      </div>
+
+      <!-- Row 2: Text path -->
+      <div style="display:flex;align-items:center;gap:4px;height:298px;">
+      <div class="encoder-box txt-enc">
+        <div class="enc-title">Text Encoder</div>
+        <div class="enc-arrows-inner">
+        <div class="layer-box lyr-trans">Transformer</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div class="layer-box lyr-sattn">Self-attention</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div class="layer-box lyr-sattn">Self-attention</div>
+        <div class="enc-mini-arrow">↑</div>
+        <div class="token-row">
+          <div class="token-sq"></div><div class="token-sq"></div>
+          <div class="token-sq"></div><div class="token-sq"></div>
+          <div class="token-sq"></div><div class="token-sq"></div>
+          <div style="font-size:11px;color:#888;align-self:center;">…</div>
+        </div>
+        </div>
+        <div class="enc-subtitle">[Transformer Model]</div>
+      </div>
+
+      <div class="arr">→</div>
+
+      <div class="proj-box">
+        <div class="proj-text">Linear Projection Head<br>&amp; Normalization</div>
+      </div>
+
+      <div class="arr">→</div>
+      </div>
+
+    </div>
+
+    <!-- ══════════ 4. EMBEDDING + MATRIX ══════════ -->
+    <div class="embed-matrix-outer">
+      <div class="embed-matrix-title">Shared Multimodal Embedding Space</div>
+
+      <div class="embed-matrix-inner">
+
+        <!-- Stacked Embeddings column (Image on top, Text below) -->
+        <div style="display:flex;flex-direction:column;gap:60px;align-items:center;">
+          <!-- Image Embeddings -->
+          <div class="embed-col">
+            <div class="embed-label" style="color:#1a60aa;">Image<br>Embeddings<br>(I₁…Iₙ)</div>
+            <div class="embed-blocks">
+              <div class="eb eb-blue"></div>
+              <div class="eb eb-blue"></div>
+              <div class="eb eb-blue"></div>
+              <div class="eb eb-dots">⋮</div>
+              <div class="eb eb-blue"></div>
+              <div class="eb eb-blue"></div>
+            </div>
+            <div class="embed-sub">Size: <em>N</em> × <em>D</em></div>
+          </div>
+
+          <!-- Text Embeddings -->
+          <div class="embed-col">
+            <div class="embed-label" style="color:#c06010;">Text<br>Embeddings<br>(T₁…Tₙ)</div>
+            <div class="embed-blocks">
+              <div class="eb eb-orange"></div>
+              <div class="eb eb-orange"></div>
+              <div class="eb eb-orange"></div>
+              <div class="eb eb-dots">⋮</div>
+              <div class="eb eb-orange"></div>
+              <div class="eb eb-orange"></div>
+            </div>
+            <div class="embed-sub">Size: <em>N</em> × <em>D</em></div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="width:1px;background:#ccc;align-self:stretch;margin:0 4px;"></div>
+
+        <!-- N×N Similarity Matrix -->
+        <div class="matrix-col" style="position:relative;">
+          <div class="matrix-main-title">Pairwise Cosine Similarities<br>Matrix (Logits)</div>
+          <div class="matrix-note">Conceptual <em>N</em>×<em>N</em>; computed block-wise in practice</div>
+          <div class="matrix-n-label"><em>N</em> x <em>N</em></div>
+
+          <div class="col-axis-label">Text Embeddings (T<sub>j</sub>)</div>
+
+          <div class="matrix-area" style="padding-left:0;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10.5px;font-weight:700;color:#2a72c4;white-space:nowrap;width:16px;text-align:center;padding:4px 0;">Image Embeddings (I<sub style="font-size:8px;">i</sub>)</div>
+              <table class="sim-matrix">
+                <thead>
+                  <tr>
+                    <td style="border:none;background:none;"></td>
+                    <th>T₁</th><th>T₂</th><th>…</th><th>T<sub>n</sub></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="rh">I₁</td>
+                    <td class="pos">I₁·T₁<br><small>*t + b</small></td>
+                    <td class="neg">I₁·T₂<br><small>*t + b</small></td>
+                    <td class="dots-cell">…</td>
+                    <td class="neg">I₁·T<sub>n</sub><br><small>*t + b</small></td>
+                  </tr>
+                  <tr>
+                    <td class="rh">I₂</td>
+                    <td class="neg">I₂·T₁<br><small>*t + b</small></td>
+                    <td class="pos">I₂·T₂<br><small>*t + b</small></td>
+                    <td class="dots-cell">…</td>
+                    <td class="neg">I₂·T<sub>n</sub><br><small>*t + b</small></td>
+                  </tr>
+                  <tr>
+                    <td class="rh" style="text-align:center;font-size:14px;color:#888;">⋮</td>
+                    <td class="dots-cell">⋮</td>
+                    <td class="dots-cell">⋮</td>
+                    <td class="pos" style="font-size:10px;">I<sub>i</sub>·T<sub>j</sub><br><small>*t + b</small></td>
+                    <td class="dots-cell">⋮</td>
+                  </tr>
+                  <tr>
+                    <td class="rh">I<sub>n</sub></td>
+                    <td class="neg">I<sub>n</sub>·T₁<br><small>*t + b</small></td>
+                    <td class="neg">I<sub>n</sub>·T₂<br><small>*t + b</small></td>
+                    <td class="dots-cell">…</td>
+                    <td class="pos">I<sub>n</sub>·T<sub>n</sub><br><small>*t + b</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="col-text-label" style="margin-top:4px;">Text Embeddings (T<sub>j</sub>)</div>
+          <div class="tau-note">t = exp(t′) is learned temperature; b is learned bias</div>
+
+        </div><!-- /matrix-col -->
+      </div><!-- /embed-matrix-inner -->
+
+      <!-- Legend -->
+      <div class="legend" style="margin-top:10px;border-top:1px solid #ddd;padding-top:10px;font-size:10.5px;">
+        <div class="legend-item">
+          <div class="legend-swatch leg-pos"></div>
+          <span><strong>Positive Pairs (i=j):</strong> y<sub>ij</sub> = +1</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch leg-neg"></div>
+          <span><strong>Negative Pairs (i≠j):</strong> y<sub>ij</sub> = −1</span>
+        </div>
+      </div>
+
+      <!-- Chunked GPU memory implementation (from SigLIP paper) -->
+      <div class="chunked-outer">
+        <div class="chunked-title">Efficient “chunked” GPU-memory implementation</div>
+        <div class="chunked-row">
+          <div class="chunk-box">
+            Data parallel across <strong>D</strong> devices<br>
+            <span class="chunk-sub">Each device keeps a local batch of size <strong>b</strong></span>
+          </div>
+
+          <div class="chunk-arrow">→</div>
+
+          <div class="chunk-mini">
+            <div class="chunk-mini-title">Materialize one <strong>b×b</strong> logits chunk</div>
+            <div class="chunk-grid" aria-label="Chunked logits block">
+              <div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div>
+              <div class="chunk-cell"></div><div class="chunk-cell hot"></div><div class="chunk-cell hot"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div>
+              <div class="chunk-cell"></div><div class="chunk-cell hot"></div><div class="chunk-cell hot"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div>
+              <div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div>
+              <div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div>
+              <div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div><div class="chunk-cell"></div>
+            </div>
+            <div class="chunk-mini-foot">Memory at a time: <strong>|B|² → b²</strong></div>
+          </div>
+
+          <div class="chunk-arrow">→</div>
+
+          <div class="chunk-box">
+            Avoid all-gathers<br>
+            <span class="chunk-sub">Use fast collective permutes to swap negatives; repeat, then sum losses across devices</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /embed-matrix-outer -->
+
+    <!-- arrow -->
+    <div class="arr">→</div>
+
+    <!-- ══════════ 5. LOSS SECTION (SigLIP) ══════════ -->
+    <div class="loss-section">
+      <div class="loss-main-title">Sigmoid Pairwise<br>Loss Function (SigLIP)</div>
+
+      <div style="display:flex;flex-direction:row;align-items:stretch;gap:8px;">
+        <div style="display:flex;align-items:center;">
+          <div class="loss-box" style="font-size:10px;">
+            Labels Matrix<br>
+            <span style="font-size:9.5px;color:#555;font-weight:600;">Y = 2·I − 1</span><br>
+            <span style="font-size:9px;color:#555;font-weight:600;">(+1 diag, −1 off)</span>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;font-size:16px;color:#444;">→</div>
+
+        <div style="display:flex;align-items:center;">
+          <div class="loss-box" style="font-size:10px;">
+            Elementwise<br>
+            log-sigmoid<br>
+            <span style="font-size:9px;color:#555;font-weight:600;">log σ( Y ⊙ logits )</span>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;font-size:16px;color:#444;">→</div>
+
+        <div style="display:flex;align-items:center;">
+          <div class="total-loss-box" style="height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+            <strong style="font-size:11px;">Total Pairwise<br>Sigmoid Loss</strong>
+            <div style="margin-top:7px;font-size:10.5px;border-top:1px solid #888;padding-top:5px;font-weight:700;line-height:1.35;">
+              L = − (1/N) Σ<sub>i,j</sub> log σ( y<sub>ij</sub> · logits<sub>ij</sub> )
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:9.5px;color:#555;text-align:center;margin-top:6px;font-style:italic;">
+        No softmax normalization (pairs scored independently); loss can be accumulated chunk-by-chunk
+      </div>
+    </div><!-- /loss-section -->
+
+  </div><!-- /main-row -->
+
+</div><!-- /diagram-container -->
+
+</body>
+</html>

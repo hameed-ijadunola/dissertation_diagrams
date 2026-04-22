@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <title>CoCa Architecture Diagram</title>
+ <style>
+  * {
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+  }
+
+  body {
+   font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+   background: #ffffff;
+   color: #1a1a1a;
+   padding: 24px;
+  }
+
+  /* ── TITLE ─────────────────────────────────────── */
+  .diagram-title {
+   text-align: center;
+   font-size: 22px;
+   font-weight: 800;
+   margin-bottom: 25px;
+   letter-spacing: -0.3px;
+   color: #2c3e50;
+  }
+
+  /* ── MAIN LAYOUT ────────────────────────────────── */
+  .main-container {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 20px;
+   min-width: 1500px;
+  }
+
+  .architecture-row {
+   display: flex;
+   align-items: stretch;
+   gap: 25px;
+   justify-content: center;
+   width: 100%;
+  }
+
+  /* ── ARROWS ────────────────────────────────── */
+  .arr {
+   font-size: 24px;
+   color: #7f8c8d;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: bold;
+  }
+
+  .arr-vert {
+   font-size: 20px;
+   color: #7f8c8d;
+   text-align: center;
+   margin: 5px 0;
+  }
+
+  /* ════════════════════════════════════════════════
+   INPUTS
+═══════════════════════════════════════════════ */
+  .input-col {
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   width: 160px;
+   padding: 20px 0;
+  }
+
+  .input-box {
+   background: #f8f9fa;
+   border: 2px solid #bdc3c7;
+   border-radius: 8px;
+   padding: 15px;
+   text-align: center;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .input-title {
+   font-size: 12px;
+   font-weight: 800;
+   color: #34495e;
+   margin-bottom: 8px;
+  }
+
+  .img-stack {
+   font-size: 50px;
+   background: white;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   padding: 10px;
+  }
+
+  .text-stack {
+   font-size: 11px;
+   font-style: italic;
+   background: white;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   padding: 8px;
+   margin-bottom: 4px;
+   color: #555;
+  }
+
+  /* ════════════════════════════════════════════════
+   ENCODERS & DECODERS (COCA CORE)
+═══════════════════════════════════════════════ */
+  .core-col {
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   width: 320px;
+   position: relative;
+  }
+
+  .module-box {
+   border: 3px solid;
+   border-radius: 12px;
+   padding: 15px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   background: white;
+  }
+
+  .img-encoder {
+   border-color: #3498db;
+   box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+  }
+
+  .txt-decoder-uni {
+   border-color: #f39c12;
+   box-shadow: 0 4px 10px rgba(243, 156, 18, 0.15);
+  }
+
+  .txt-decoder-multi {
+   border-color: #9b59b6;
+   box-shadow: 0 4px 10px rgba(155, 89, 182, 0.15);
+  }
+
+  .module-title {
+   font-size: 14px;
+   font-weight: 800;
+   margin-bottom: 12px;
+   text-align: center;
+  }
+
+  .img-encoder .module-title {
+   color: #2980b9;
+  }
+
+  .txt-decoder-uni .module-title {
+   color: #d35400;
+  }
+
+  .txt-decoder-multi .module-title {
+   color: #8e44ad;
+  }
+
+  .layer {
+   width: 100%;
+   border: 1.5px solid;
+   border-radius: 6px;
+   padding: 8px;
+   font-size: 11px;
+   font-weight: 700;
+   text-align: center;
+   margin: 3px 0;
+  }
+
+  .lyr-vit {
+   background: #d6eaf8;
+   border-color: #5dade2;
+   color: #154360;
+  }
+
+  .lyr-sattn {
+   background: #fdebd0;
+   border-color: #f5b041;
+   color: #7e5109;
+  }
+
+  .lyr-cattn {
+   background: #e8daef;
+   border-color: #af7ac5;
+   color: #512e5f;
+  }
+
+  .lyr-ffn {
+   background: #f2f3f4;
+   border-color: #bdc3c7;
+   color: #424949;
+  }
+
+  .pooler {
+   background: #d1f2eb;
+   border: 2px dashed #1abc9c;
+   border-radius: 6px;
+   padding: 8px;
+   width: 100%;
+   text-align: center;
+   font-size: 11px;
+   font-weight: 800;
+   color: #0e6251;
+   margin-top: 10px;
+  }
+
+  /* Cross Attention Connector */
+  .cross-attention-flow {
+   position: absolute;
+   right: -60px;
+   top: 50%;
+   transform: translateY(-50%);
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   color: #8e44ad;
+   font-size: 10px;
+   font-weight: bold;
+  }
+
+  /* ════════════════════════════════════════════════
+   EMBEDDINGS & LOSSES
+═══════════════════════════════════════════════ */
+  .loss-col {
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   width: 450px;
+  }
+
+  .loss-box {
+   background: #fdfefe;
+   border: 2px solid;
+   border-radius: 10px;
+   padding: 15px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+  }
+
+  .contrastive-box {
+   border-color: #2ecc71;
+   box-shadow: 0 4px 6px rgba(46, 204, 113, 0.1);
+  }
+
+  .generative-box {
+   border-color: #e74c3c;
+   box-shadow: 0 4px 6px rgba(231, 76, 60, 0.1);
+  }
+
+  .loss-title {
+   font-size: 14px;
+   font-weight: 800;
+   margin-bottom: 10px;
+  }
+
+  .contrastive-box .loss-title {
+   color: #27ae60;
+  }
+
+  .generative-box .loss-title {
+   color: #c0392b;
+  }
+
+  .loss-desc {
+   font-size: 11px;
+   color: #555;
+   text-align: center;
+   margin-bottom: 15px;
+  }
+
+  /* Matrix for Contrastive */
+  table.sim-matrix {
+   border-collapse: collapse;
+   margin-top: 5px;
+  }
+
+  table.sim-matrix th {
+   font-size: 11px;
+   font-weight: 700;
+   text-align: center;
+   padding: 4px 6px;
+   color: #1a60aa;
+  }
+
+  table.sim-matrix td {
+   width: 45px;
+   height: 30px;
+   text-align: center;
+   border: 1px solid #ccc;
+   font-size: 10px;
+   vertical-align: middle;
+  }
+
+  table.sim-matrix .rh {
+   font-size: 11px;
+   font-weight: 700;
+   text-align: right;
+   color: #c06010;
+   padding-right: 6px;
+   border: none;
+  }
+
+  table.sim-matrix .pos {
+   background: #a8e0a8;
+   font-weight: bold;
+  }
+
+  table.sim-matrix .neg {
+   background: #f5b4b4;
+  }
+
+  /* Generative Output */
+  .gen-output {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   background: #fadbd8;
+   border: 1px solid #e74c3c;
+   padding: 10px 20px;
+   border-radius: 6px;
+   font-size: 12px;
+   font-weight: 700;
+   color: #7b241c;
+  }
+ </style>
+</head>
+
+<body>
+
+ <div class="diagram-container">
+  <h1 class="diagram-title">Contrastive Captioner (CoCa) Architecture</h1>
+
+  <div class="main-container">
+
+   <div class="architecture-row">
+
+    <div class="input-col">
+     <div class="input-box">
+      <div class="input-title">Text Input</div>
+      <div class="text-stack">"a photo of a dog"</div>
+      <div class="text-stack">"a black car"</div>
+      <div style="font-size: 14px; color:#888;">⋮</div>
+     </div>
+
+     <div style="height: 100px;"></div>
+     <div class="input-box">
+      <div class="input-title">Image Input</div>
+      <div class="img-stack">🐕</div>
+      <div style="font-size: 10px; color:#777; margin-top:5px;">Batch of Images</div>
+     </div>
+    </div>
+
+    <div class="arr">→</div>
+
+    <div class="core-col">
+
+     <div class="module-box txt-decoder-multi">
+      <div class="module-title">Multimodal Text Decoder<br><span style="font-size:10px;font-weight:normal;">(Upper Half
+        Layers)</span></div>
+      <div class="layer lyr-ffn">Feed-Forward Network</div>
+      <div class="arr-vert">↑</div>
+      <div class="layer lyr-cattn">Cross-Attention<br><span style="font-size:9px;font-weight:normal;">(Attends to Image
+        Encoder Outputs)</span></div>
+      <div class="arr-vert">↑</div>
+      <div class="layer lyr-sattn">Causal Masked Self-Attention</div>
+     </div>
+
+     <div class="arr-vert" style="color: #d35400;">↑ Cascades</div>
+
+     <div class="module-box txt-decoder-uni">
+      <div class="module-title">Unimodal Text Decoder<br><span style="font-size:10px;font-weight:normal;">(Lower Half
+        Layers)</span></div>
+      <div class="layer lyr-ffn">Feed-Forward Network</div>
+      <div class="arr-vert">↑</div>
+      <div class="layer lyr-sattn">Causal Masked Self-Attention</div>
+      <div class="pooler">Attentional Pooler<br><span style="font-size:9px;font-weight:normal;">(Extracts Global Text
+        Embedding)</span></div>
+     </div>
+
+     <div style="height: 40px;"></div>
+     <div class="module-box img-encoder">
+      <div class="module-title">Image Encoder</div>
+      <div class="layer lyr-vit">Vision Transformer / CNN</div>
+      <div class="pooler">Attentional Pooler<br><span style="font-size:9px;font-weight:normal;">(Extracts Global Image
+        Embedding)</span></div>
+      <div style="font-size:10px; color:#2980b9; font-weight:bold; margin-top:8px;">Outputs Visual Features ↗</div>
+     </div>
+
+    </div>
+
+    <div class="arr">→</div>
+
+    <div class="loss-col">
+
+     <div class="loss-box generative-box">
+      <div class="loss-title">Captioning Loss (L<sub>cap</sub>)</div>
+      <div class="loss-desc">Autoregressive next-token prediction from the multimodal decoder outputs using
+       Cross-Entropy loss.</div>
+      <div class="gen-output">
+       <span>Predicts:</span>
+       <span style="background:white; padding:4px 8px; border-radius:4px; border:1px solid #e74c3c;">[NEXT TOKEN]</span>
+      </div>
+     </div>
+
+     <div class="loss-box contrastive-box">
+      <div class="loss-title">Contrastive Loss (L<sub>con</sub>)</div>
+      <div class="loss-desc">Aligns global embeddings extracted by the Attentional Poolers of the Image Encoder and
+       Unimodal Text Decoder.</div>
+
+      <table class="sim-matrix">
+       <thead>
+        <tr>
+         <td style="border:none;"></td>
+         <th>T₁</th>
+         <th>T₂</th>
+         <th>…</th>
+         <th>T<sub>n</sub></th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td class="rh">I₁</td>
+         <td class="pos">I₁·T₁</td>
+         <td class="neg">I₁·T₂</td>
+         <td style="border:none;">…</td>
+         <td class="neg">I₁·T<sub>n</sub></td>
+        </tr>
+        <tr>
+         <td class="rh">I₂</td>
+         <td class="neg">I₂·T₁</td>
+         <td class="pos">I₂·T₂</td>
+         <td style="border:none;">…</td>
+         <td class="neg">I₂·T<sub>n</sub></td>
+        </tr>
+        <tr>
+         <td class="rh" style="text-align:center;">⋮</td>
+         <td style="border:none;">⋮</td>
+         <td style="border:none;">⋮</td>
+         <td class="pos" style="font-size:8px;">I<sub>i</sub>·T<sub>j</sub></td>
+         <td style="border:none;">⋮</td>
+        </tr>
+        <tr>
+         <td class="rh">I<sub>n</sub></td>
+         <td class="neg">I<sub>n</sub>·T₁</td>
+         <td class="neg">I<sub>n</sub>·T₂</td>
+         <td style="border:none;">…</td>
+         <td class="pos">I<sub>n</sub>·T<sub>n</sub></td>
+        </tr>
+       </tbody>
+      </table>
+      <div style="font-size: 9px; color:#7f8c8d; margin-top:8px;">Symmetric Softmax over scaled similarities</div>
+     </div>
+
+    </div>
+
+   </div>
+  </div>
+ </div>
+
+</body>
+
+</html>

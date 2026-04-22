@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8">
+ <title>BLIP-2 Architecture Diagram</title>
+ <style>
+  * {
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+  }
+
+  body {
+   font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+   background: #ffffff;
+   color: #1a1a1a;
+   padding: 24px;
+  }
+
+  /* ── TITLE ─────────────────────────────────────── */
+  .diagram-title {
+   text-align: center;
+   font-size: 24px;
+   font-weight: 800;
+   margin-bottom: 25px;
+   letter-spacing: -0.3px;
+   color: #2c3e50;
+  }
+
+  /* ── MAIN LAYOUT ────────────────────────────────── */
+  .main-container {
+   display: flex;
+   flex-direction: column;
+   gap: 30px;
+   min-width: 1400px;
+   max-width: 1600px;
+   margin: 0 auto;
+  }
+
+  .stage-container {
+   border: 2px dashed #95a5a6;
+   border-radius: 12px;
+   padding: 20px;
+   background: #fdfefe;
+   position: relative;
+  }
+
+  .stage-title {
+   position: absolute;
+   top: -14px;
+   left: 20px;
+   background: #ffffff;
+   padding: 0 10px;
+   font-size: 16px;
+   font-weight: 800;
+   color: #34495e;
+   border: 2px solid #95a5a6;
+   border-radius: 6px;
+  }
+
+  .row {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 20px;
+  }
+
+  /* ── SMALL ARROW ────────────────────────────────── */
+  .arr {
+   font-size: 24px;
+   color: #7f8c8d;
+   flex-shrink: 0;
+   font-weight: bold;
+  }
+
+  .arr-down {
+   font-size: 24px;
+   color: #7f8c8d;
+   text-align: center;
+   margin: 10px 0;
+   font-weight: bold;
+  }
+
+  /* ════════════════════════════════════════════════
+   FROZEN MODULES
+═══════════════════════════════════════════════ */
+  .frozen-box {
+   background: #e8f4f8;
+   border: 3px solid #3498db;
+   border-radius: 10px;
+   padding: 15px;
+   text-align: center;
+   position: relative;
+   box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+  }
+
+  .frozen-badge {
+   position: absolute;
+   top: -10px;
+   right: -10px;
+   background: #2980b9;
+   color: white;
+   font-size: 10px;
+   font-weight: bold;
+   padding: 3px 6px;
+   border-radius: 12px;
+   border: 1px solid white;
+  }
+
+  .frozen-title {
+   font-size: 14px;
+   font-weight: 800;
+   color: #2980b9;
+   margin-bottom: 8px;
+  }
+
+  .frozen-desc {
+   font-size: 11px;
+   color: #555;
+   font-style: italic;
+  }
+
+  /* ════════════════════════════════════════════════
+   Q-FORMER
+═══════════════════════════════════════════════ */
+  .qformer-box {
+   background: #fcf3cf;
+   border: 3px solid #f39c12;
+   border-radius: 12px;
+   padding: 15px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   width: 480px;
+   box-shadow: 0 4px 6px rgba(243, 156, 18, 0.15);
+  }
+
+  .qformer-title {
+   font-size: 16px;
+   font-weight: 800;
+   color: #d35400;
+   margin-bottom: 15px;
+  }
+
+  .qformer-internals {
+   display: flex;
+   gap: 15px;
+   width: 100%;
+  }
+
+  .qformer-half {
+   flex: 1;
+   background: white;
+   border: 1.5px solid #f1c40f;
+   border-radius: 8px;
+   padding: 10px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   position: relative;
+  }
+
+  .qformer-half-title {
+   font-size: 12px;
+   font-weight: 700;
+   color: #b9770e;
+   margin-bottom: 10px;
+  }
+
+  .layer-box {
+   width: 100%;
+   border: 1.5px solid;
+   border-radius: 5px;
+   padding: 6px;
+   font-size: 11px;
+   font-weight: 700;
+   text-align: center;
+   margin: 4px 0;
+  }
+
+  .lyr-sattn {
+   background: #fad7a1;
+   border-color: #e67e22;
+   color: #a04000;
+  }
+
+  .lyr-cattn {
+   background: #aed6f1;
+   border-color: #5dade2;
+   color: #154360;
+  }
+
+  .lyr-ffn {
+   background: #e5e8e8;
+   border-color: #b2babb;
+   color: #515a5a;
+  }
+
+  .shared-attention-box {
+   width: calc(100% + 30px);
+   margin-left: -15px;
+   background: #fad7a1;
+   border: 2px dashed #e67e22;
+   border-radius: 5px;
+   padding: 6px;
+   font-size: 11px;
+   font-weight: 700;
+   text-align: center;
+   color: #a04000;
+   margin-bottom: 10px;
+   position: relative;
+   z-index: 5;
+  }
+
+  /* ════════════════════════════════════════════════
+   INPUTS & VECTORS
+═══════════════════════════════════════════════ */
+  .input-node {
+   background: white;
+   border: 2px solid #bdc3c7;
+   border-radius: 8px;
+   padding: 10px;
+   text-align: center;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   height: 80px;
+  }
+
+  .learnable-queries {
+   background: #e8daef;
+   border: 2px solid #9b59b6;
+   border-radius: 8px;
+   padding: 10px;
+   text-align: center;
+   color: #5b2c6f;
+  }
+
+  .query-blocks {
+   display: flex;
+   gap: 3px;
+   margin-top: 5px;
+  }
+
+  .qb {
+   width: 12px;
+   height: 20px;
+   background: #af7ac5;
+   border-radius: 2px;
+  }
+
+  /* ════════════════════════════════════════════════
+   STAGE 1 OBJECTIVES
+═══════════════════════════════════════════════ */
+  .objectives-container {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+  }
+
+  .obj-card {
+   background: white;
+   border: 2px solid;
+   border-radius: 6px;
+   padding: 8px 12px;
+   text-align: center;
+   width: 200px;
+  }
+
+  .obj-itc {
+   border-color: #3498db;
+   color: #2980b9;
+  }
+
+  .obj-itg {
+   border-color: #9b59b6;
+   color: #8e44ad;
+  }
+
+  .obj-itm {
+   border-color: #2ecc71;
+   color: #27ae60;
+  }
+
+  .obj-title {
+   font-size: 12px;
+   font-weight: 800;
+  }
+
+  .obj-desc {
+   font-size: 9px;
+   color: #555;
+   margin-top: 3px;
+  }
+
+  /* ════════════════════════════════════════════════
+   STAGE 2 GENERATIVE
+═══════════════════════════════════════════════ */
+  .fc-layer {
+   background: #d5f5e3;
+   border: 2px dashed #2ecc71;
+   border-radius: 6px;
+   padding: 10px 15px;
+   text-align: center;
+   font-size: 12px;
+   font-weight: 700;
+   color: #1d8348;
+  }
+
+  .prompt-box {
+   display: flex;
+   align-items: center;
+   background: #f4f6f9;
+   border: 2px solid #7f8c8d;
+   border-radius: 8px;
+   padding: 10px;
+   gap: 10px;
+  }
+
+  .soft-prompt {
+   background: #e8daef;
+   border: 1px solid #9b59b6;
+   padding: 6px 10px;
+   border-radius: 4px;
+   font-size: 11px;
+   font-weight: 700;
+   color: #5b2c6f;
+  }
+
+  .hard-prompt {
+   background: #ffffff;
+   border: 1px solid #bdc3c7;
+   padding: 6px 10px;
+   border-radius: 4px;
+   font-size: 11px;
+   font-style: italic;
+   color: #333;
+  }
+
+  .output-node {
+   background: #eaf2f8;
+   border: 2px solid #2980b9;
+   border-radius: 8px;
+   padding: 12px 20px;
+   font-size: 14px;
+   font-weight: 800;
+   color: #154360;
+  }
+ </style>
+</head>
+
+<body>
+
+ <div class="diagram-container">
+  <h1 class="diagram-title">Bootstrapping Language-Image Pre-training with Frozen Models (BLIP-2)</h1>
+
+  <div class="main-container">
+
+   <div class="stage-container">
+    <div class="stage-title">Stage 1: Vision-Language Representation Learning</div>
+
+    <div class="row">
+
+     <div style="display:flex; flex-direction:column; gap:15px; align-items:center;">
+      <div class="input-node">
+       <span style="font-size: 32px;">🖼️</span>
+       <span style="font-size: 11px; font-weight: bold; margin-top:5px;">Input Image</span>
+      </div>
+      <div class="arr-down">↓</div>
+      <div class="frozen-box">
+       <div class="frozen-badge">❄️ FROZEN</div>
+       <div class="frozen-title">Image Encoder</div>
+       <div class="frozen-desc">(e.g., ViT, CLIP, EVA-CLIP)</div>
+      </div>
+      <div class="arr-down">↓</div>
+      <div class="input-node" style="height: auto; padding: 6px 10px;">
+       <span style="font-size: 11px; font-weight: bold;">Frozen Image Features</span>
+      </div>
+     </div>
+
+     <div class="arr">→</div>
+
+     <div style="display:flex; flex-direction:column; align-items:center; gap: 15px;">
+
+      <div style="display:flex; gap: 200px;">
+       <div class="learnable-queries">
+        <span style="font-size: 11px; font-weight: 800;">Learnable Queries</span><br>
+        <span style="font-size: 9px;">(N x D dimensions)</span>
+        <div class="query-blocks">
+         <div class="qb"></div>
+         <div class="qb"></div>
+         <div class="qb"></div>
+         <div style="font-size:12px; margin:0 2px;">...</div>
+         <div class="qb"></div>
+        </div>
+       </div>
+
+       <div class="input-node" style="height: auto; padding: 10px;">
+        <span style="font-size: 11px; font-weight: bold;">Text Input</span><br>
+        <span style="font-size: 9px; font-style:italic;">"a dog playing..."</span>
+       </div>
+      </div>
+
+      <div class="arr-down">↓</div>
+
+      <div class="qformer-box">
+       <div class="qformer-title">Q-Former (Querying Transformer)</div>
+
+       <div class="shared-attention-box">Shared Self-Attention</div>
+
+       <div class="qformer-internals">
+        <div class="qformer-half">
+         <div class="qformer-half-title">Image Transformer</div>
+         <div class="layer-box lyr-cattn">Cross-Attention<br><span style="font-size:8px; font-weight:normal;">(Interacts
+           with Frozen Image Features)</span></div>
+         <div style="font-size:16px;">↓</div>
+         <div class="layer-box lyr-ffn">Feed-Forward Network</div>
+        </div>
+
+        <div class="qformer-half">
+         <div class="qformer-half-title">Text Transformer</div>
+         <div style="height: 35px;"></div>
+         <div style="font-size:16px;">↓</div>
+         <div class="layer-box lyr-ffn">Feed-Forward Network</div>
+        </div>
+       </div>
+      </div>
+     </div>
+
+     <div class="arr">→</div>
+
+     <div class="objectives-container">
+      <div class="obj-card obj-itc">
+       <div class="obj-title">Image-Text Contrastive (ITC)</div>
+       <div class="obj-desc">Aligns query representation with text representation.</div>
+      </div>
+      <div class="obj-card obj-itg">
+       <div class="obj-title">Image-Grounded Text Gen (ITG)</div>
+       <div class="obj-desc">Trains queries to extract features for text generation.</div>
+      </div>
+      <div class="obj-card obj-itm">
+       <div class="obj-title">Image-Text Matching (ITM)</div>
+       <div class="obj-desc">Binary classification to capture fine-grained alignment.</div>
+      </div>
+     </div>
+
+    </div>
+   </div>
+
+   <div class="stage-container">
+    <div class="stage-title">Stage 2: Vision-to-Language Generative Learning</div>
+
+    <div class="row">
+
+     <div class="learnable-queries" style="background:#fdfefe;">
+      <span style="font-size: 11px; font-weight: 800; color:#d35400;">Output Queries</span><br>
+      <span style="font-size: 9px; color:#555;">(Extracted Visual Features)</span>
+     </div>
+
+     <div class="arr">→</div>
+
+     <div class="fc-layer">
+      Fully Connected (FC) Layer<br>
+      <span style="font-size:9px; font-weight:normal; color:#555;">(Projects to LLM embedding dimension)</span>
+     </div>
+
+     <div class="arr">→</div>
+
+     <div class="prompt-box">
+      <div class="soft-prompt">Soft Visual Prompts</div>
+      <span style="font-size:12px; font-weight:bold;">+</span>
+      <div class="hard-prompt">Optional Text Prompt<br><span>(e.g., "Question: What is...")</span></div>
+     </div>
+
+     <div class="arr">→</div>
+
+     <div class="frozen-box"
+      style="border-color:#8e44ad; background:#f5eef8; box-shadow: 0 4px 6px rgba(142, 68, 173, 0.2);">
+      <div class="frozen-badge" style="background:#8e44ad;">❄️ FROZEN</div>
+      <div class="frozen-title" style="color:#8e44ad;">Large Language Model</div>
+      <div class="frozen-desc">(e.g., OPT Decoder, FlanT5 Enc-Dec)</div>
+     </div>
+
+     <div class="arr">→</div>
+
+     <div class="output-node">
+      Generated Text
+     </div>
+
+    </div>
+   </div>
+
+  </div>
+ </div>
+
+</body>
+
+</html>
